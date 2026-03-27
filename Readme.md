@@ -174,7 +174,7 @@ python deepfake_voice.py
 - Paths and most hyperparameters are currently hardcoded.
 --------------------------------------------------------------------------------------------------
 # Developed by 
-# Zainab Sayeed 
-# Sameer sinha 
-# Sreerag s Kumar 
-# Tejas Agrawal 
+1. Zainab Sayeed 
+2. Sameer sinha 
+3. Sreerag s Kumar 
+4. Tejas Agrawal 
