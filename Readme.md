@@ -1,10 +1,18 @@
-# Deepfake Image + Voice Detection (PyTorch)
+# Deepfake Detection Roadmap (PyTorch)
 
 This project currently includes two scripts:
 
 1. `deepfake_img.py` for image deepfake detection and GAN-based generation.
 2. `deepfake_voice.py` for audio deepfake detection with a hybrid model.
 
+This project focuses on detecting deepfake content seen across the internet.
+
+## Development Stages
+
+1. Stage 1 (Current): Deepfake detection from images and audio.
+2. Stage 2 (Future): Deepfake detection from video streams.
+3. Stage 3 (Future): Source tracing to identify the address/origin of deepfake-generated content.
+  
 ## Project Files
 
 - `deepfake_img.py`: End-to-end image pipeline (classification + GAN).
@@ -90,6 +98,40 @@ Then it performs:
 - Uses gradient clipping (`max_norm=1.0`)
 - Prints validation accuracy after training
 
+## Loss Function and Mathematical Formulation
+
+Main work currently focuses on improving loss behavior during training for stable image/audio deepfake classification.
+
+### Binary Cross-Entropy Loss (used in current classifiers)
+
+For predicted probability $\hat{y}$ and ground-truth label $y \in \{0,1\}$:
+
+$$
+\mathcal{L}_{BCE}(y, \hat{y}) = -\Big(y\log(\hat{y}) + (1-y)\log(1-\hat{y})\Big)
+$$
+
+For a batch of size $N$:
+
+$$
+\mathcal{L}_{batch} = \frac{1}{N}\sum_{i=1}^{N} -\Big(y_i\log(\hat{y}_i) + (1-y_i)\log(1-\hat{y}_i)\Big)
+$$
+
+### GAN Objective (image generation block)
+
+Discriminator objective:
+
+$$
+\max_D\; \mathbb{E}_{x\sim p_{data}}[\log D(x)] + \mathbb{E}_{z\sim p_z}[\log(1-D(G(z)))]
+$$
+
+Generator objective:
+
+$$
+\min_G\; \mathbb{E}_{z\sim p_z}[\log(1-D(G(z)))]
+$$
+
+In practice, training minimizes equivalent loss functions with gradient-based optimizers (Adam).
+
 ### Important Note
 
 The current voice script uses hardcoded Kaggle paths. If you run locally, update those paths to your local dataset directories before execution.
@@ -130,3 +172,9 @@ python deepfake_voice.py
 
 - Both scripts are single-file, notebook-style pipelines.
 - Paths and most hyperparameters are currently hardcoded.
+--------------------------------------------------------------------------------------------------
+Developed by 
+Zainab Sayeed 
+Sameer sinha 
+Sreerag s kumar 
+Tejas Aggrwal 
