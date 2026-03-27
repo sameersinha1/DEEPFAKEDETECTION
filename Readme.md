@@ -23,7 +23,7 @@ This project focuses on detecting deepfake content seen across the internet.
 
 ### First Pixel Generated
 
-![First generated image output](WhatsApp%20Image%202026-03-27%20at%2020.42.31.jpeg)
+![First generated image output](1stpixel.jpeg)
 
 ### Image Dataset Structure
 
@@ -173,8 +173,8 @@ python deepfake_voice.py
 - Both scripts are single-file, notebook-style pipelines.
 - Paths and most hyperparameters are currently hardcoded.
 --------------------------------------------------------------------------------------------------
-Developed by 
-Zainab Sayeed 
-Sameer sinha 
-Sreerag s kumar 
-Tejas Aggrwal 
+# Developed by 
+# Zainab Sayeed 
+# Sameer sinha 
+# Sreerag s Kumar 
+# Tejas Agrawal 
