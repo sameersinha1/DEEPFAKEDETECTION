@@ -21,9 +21,27 @@ This project focuses on detecting deepfake content seen across the internet.
 
 ## Deepfake Image
 
-### First Pixel Generated
+### GAN Training Progress (Epoch-wise)
 
-![First generated image output](1stpixel.jpeg)
+The following outputs show how image generation improves over training epochs:
+
+1. **Epoch 0 (Initial Output)**
+
+![GAN output at epoch 0](0%20stepoch.jpeg)
+
+2. **Epochs 1 to 10 (Early Learning Phase)**
+
+![GAN outputs from epoch 1 to 10](1to%2010%20.jpeg)
+
+3. **Epoch 110 (Final Output)**
+
+![GAN output at epoch 110](110.jpeg)
+
+### Progress Summary
+
+- **Epoch 0:** Output is mostly noisy and lacks clear structure.
+- **Epochs 1-10:** Basic patterns start to appear as the generator begins learning.
+- **Epoch 110:** Generated output is significantly more coherent, showing learned visual features.
 
 ### Image Dataset Structure
 
