@@ -21,6 +21,10 @@ This project focuses on detecting deepfake content seen across the internet.
 
 ## Deepfake Image
 
+### First Pixel Generated
+
+![First generated image output](1stpixel.jpeg)
+
 ### GAN Training Progress (Epoch-wise)
 
 The following outputs show how image generation improves over training epochs:
