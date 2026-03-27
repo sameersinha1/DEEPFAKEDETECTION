@@ -67,6 +67,23 @@ The voice script builds a combined dataset from:
 - Fake-or-Real dataset
 - WaveFake dataset
 
+### Voice Dataset Labeling Logic
+
+- ASVspoof labels are parsed from protocol text files.
+- In this project mapping:
+  - `bonafide -> 0` (real)
+  - `spoof/fake -> 1` (fake)
+- Fake-or-Real labels are inferred from folder names (`real` or `fake`).
+- WaveFake files are treated as fake (`1`).
+
+### Voice Data Preparation
+
+- Audio extensions used: `.wav`, `.flac`
+- Train/validation split is stratified (`test_size=0.2`).
+- Current script caps sample counts as:
+  - Train subset: first `20000` items
+  - Validation subset: first `5000` items
+
 Then it performs:
 
 1. Audio loading (`.wav` and `.flac`).
@@ -74,6 +91,7 @@ Then it performs:
 3. Mono conversion.
 4. Waveform normalization.
 5. Fixed-length trim/pad to `3 seconds`.
+6. Mel-spectrogram conversion (`n_mels=64`, `n_fft=400`, `hop_length=160`) with log scaling.
 
 ### Voice Features and Model
 
@@ -89,6 +107,12 @@ Then it performs:
   - Concatenate CNN embedding + feature embedding
   - Fully connected binary output with sigmoid
 
+### Input and Output Shapes (Voice Model)
+
+- Input 1: log-mel spectrogram tensor (`1 x 64 x T`)
+- Input 2: handcrafted feature vector (`27` values)
+- Output: single probability score in `[0, 1]` for fake/real classification
+
 ### Voice Training Behavior
 
 - Loss: `BCELoss`
@@ -97,6 +121,12 @@ Then it performs:
 - Batch size: `16`
 - Uses gradient clipping (`max_norm=1.0`)
 - Prints validation accuracy after training
+
+### Current Voice Script Limitations
+
+- Dataset paths are hardcoded to Kaggle-style directories.
+- Script currently prints accuracy but does not save a `.pth` voice checkpoint.
+- No confusion matrix/classification report is exported yet.
 
 ## Loss Function and Mathematical Formulation
 
