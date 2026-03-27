@@ -1,4 +1,4 @@
-# Deepfake Detection Roadmap (PyTorch)
+# Deepfake Video Detection
 
 This project currently includes two scripts:
 
@@ -7,11 +7,18 @@ This project currently includes two scripts:
 
 This project focuses on detecting deepfake content seen across the internet.
 
+## Project Status
+
+**Currently in Stage 1: Core Deepfake Detection Foundation**
+
+Stage 1 is actively focused on building a strong base system for image and voice deepfake detection.  
+This phase establishes the core models, training pipelines, and evaluation flow that will power future video and source-tracing capabilities.
+
 ## Development Stages
 
-1. Stage 1 (Current): Deepfake detection from images and audio.
-2. Stage 2 (Future): Deepfake detection from video streams.
-3. Stage 3 (Future): Source tracing to identify the address/origin of deepfake-generated content.
+1. **Stage 1 (Current):** Deepfake detection from images and audio.
+2. **Stage 2 (Future):** Deepfake detection from video streams.
+3. **Stage 3 (Future):** Source tracing to identify the address/origin of deepfake-generated content.
   
 ## Project Files
 
