@@ -1,99 +1,98 @@
-# Deepfake Image Detection + GAN Training (PyTorch)
+# Deepfake Image + Voice Detection (PyTorch)
 
-This project contains a single script, `deepfake_img.py`, that:
+This project currently includes two scripts:
 
-1. Extracts an image dataset from `deepfake.zip`.
-2. Trains a CNN discriminator to classify **Real** vs **Fake** images.
-3. Evaluates the discriminator with loss, accuracy, and a confusion matrix.
-4. Defines and trains a GAN-style generator/discriminator loop.
-5. Saves checkpoints for both discriminator-only and GAN training.
+1. `deepfake_img.py` for image deepfake detection and GAN-based generation.
+2. `deepfake_voice.py` for audio deepfake detection with a hybrid model.
 
 ## Project Files
 
-- `deepfake_img.py`: End-to-end training and evaluation script.
+- `deepfake_img.py`: End-to-end image pipeline (classification + GAN).
+- `deepfake_voice.py`: End-to-end voice pipeline (audio preprocessing + hybrid classifier training).
 - `Readme.md`: Project documentation.
 
-## Expected Dataset Structure
+## Deepfake Image
 
-The script expects a zip file named `deepfake.zip` in the project root.
+### First Pixel Generated
+
+![First generated image output](WhatsApp%20Image%202026-03-27%20at%2020.42.31.jpeg)
+
+### Image Dataset Structure
+
+The image script expects a zip file named `deepfake.zip` in the project root.
 
 After extraction, expected folders are:
 
 ```text
 dataset/
-	deepfake/
-		real/
-			*.jpg|*.png|...
-		Fake/
-			*.jpg|*.png|...
+    deepfake/
+        real/
+            *.jpg|*.png|...
+        Fake/
+            *.jpg|*.png|...
 ```
 
 Notes:
 - Folder names are case-sensitive in code: `real` and `Fake`.
 - Images are resized to `64x64` during loading.
 
-## What the Script Does
+### What `deepfake_img.py` Does
 
-### 1) Setup and Data Preview
+1. Extracts the image dataset and previews samples.
+2. Trains a CNN discriminator to classify Real vs Fake.
+3. Evaluates the discriminator (loss, accuracy, confusion matrix).
+4. Trains a GAN loop for generation.
+5. Saves model checkpoints.
 
-- Imports common ML/computer vision libraries (`torch`, `cv2`, `sklearn`, `matplotlib`, etc.).
-- Checks CUDA availability.
-- Extracts `deepfake.zip` into `dataset`.
-- Displays sample images from both classes.
-
-### 2) Discriminator Model
-
-- Defines `Discriminator` (CNN classifier) with:
-	- Conv blocks: 3->64->128->256
-	- LeakyReLU activations
-	- BatchNorm in deeper layers
-	- Final linear output (logit)
-- Uses `BCEWithLogitsLoss` for binary classification.
-
-### 3) Dataset and DataLoaders
-
-- Builds file path lists:
-	- `real` labeled as `1`
-	- `Fake` labeled as `0`
-- Splits into train/test with `train_test_split(test_size=0.2)`.
-- `DeepfakeDataset` reads image with OpenCV, converts BGR->RGB, normalizes to `[-1, 1]`, and returns tensors.
-
-### 4) Discriminator Training
-
-- Trains for `50` epochs using Adam (`lr=0.0002`).
-- Saves training loss history.
-- Exports weights to `discriminator_model.pth`.
-
-### 5) Discriminator Evaluation
-
-- Loads saved discriminator weights.
-- Computes:
-	- Test loss
-	- Test accuracy
-	- Confusion matrix (Fake vs Real)
-- Plots training loss curve and confusion matrix.
-
-### 6) GAN Section
-
-- Freezes discriminator parameters once.
-- Defines `Generator` that maps `z` (`100`-dim noise) to `3x64x64` images with `Tanh` output.
-- Runs GAN training loop for up to `600` epochs.
-- Uses gradient clipping for both D and G.
-- Saves checkpoint every epoch to `gan_checkpoint.pth`.
-- Displays generated image grids every 10 epochs.
-
-## Outputs Produced
+### Image Outputs
 
 - `discriminator_model.pth`: trained discriminator weights.
-- `gan_checkpoint.pth`: epoch-wise GAN checkpoint dict with:
-	- `epoch`
-	- `G`, `D`
-	- `optimizer_G`, `optimizer_D`
-- Plot windows:
-	- Sample dataset images
-	- Training loss curve
-	- Confusion matrix
-	- Generated image grids (periodic)
+- `gan_checkpoint.pth`: GAN checkpoint with `epoch`, `G`, `D`, and optimizer states.
+
+## Deepfake Voice
+
+### Voice Pipeline Summary (`deepfake_voice.py`)
+
+The voice script builds a combined dataset from:
+
+- ASVspoof 2019
+- Fake-or-Real dataset
+- WaveFake dataset
+
+Then it performs:
+
+1. Audio loading (`.wav` and `.flac`).
+2. Resampling to `16 kHz`.
+3. Mono conversion.
+4. Waveform normalization.
+5. Fixed-length trim/pad to `3 seconds`.
+
+### Voice Features and Model
+
+- Mel spectrogram branch (CNN):
+  - Conv2d(1->16), MaxPool
+  - Conv2d(16->32), MaxPool
+  - AdaptiveAvgPool to `8x8`
+- Handcrafted feature branch:
+  - MFCC mean + MFCC std (`13 + 13`)
+  - Zero-crossing rate (`1`)
+  - Total handcrafted features: `27`
+- Hybrid classifier:
+  - Concatenate CNN embedding + feature embedding
+  - Fully connected binary output with sigmoid
+
+### Voice Training Behavior
+
+- Loss: `BCELoss`
+- Optimizer: `Adam` (`lr=0.002`)
+- Epochs: `25`
+- Batch size: `16`
+- Uses gradient clipping (`max_norm=1.0`)
+- Prints validation accuracy after training
+
+### Important Note
+
+The current voice script uses hardcoded Kaggle paths. If you run locally, update those paths to your local dataset directories before execution.
 
 ## Requirements
 
@@ -108,30 +107,26 @@ If using GPU, install the CUDA-compatible PyTorch build from the official PyTorc
 
 ## How to Run
 
+### Run Image Script
+
 1. Place `deepfake.zip` in the project root.
-2. Ensure the zip contains `deepfake/real` and `deepfake/Fake` folders.
+2. Ensure the zip contains `deepfake/real` and `deepfake/Fake`.
 3. Run:
 
 ```bash
 python deepfake_img.py
 ```
 
-## Current Code Notes
+### Run Voice Script
 
-- The script is notebook-style and executes sequentially in one file.
-- There is no CLI/config system yet (paths and hyperparameters are hardcoded).
-- In the GAN block, make sure generator initialization exists before optimizer creation:
+1. Update dataset paths in `deepfake_voice.py` to match your environment.
+2. Run:
 
-```python
-G = Generator().to(device)
+```bash
+python deepfake_voice.py
 ```
 
-Without that line, `optimizer_G = optim.Adam(G.parameters(), ...)` will fail.
+## Current Notes
 
-## Suggested Improvements
-
-- Add argument parsing for dataset path, epochs, and learning rates.
-- Split code into modules: data, models, train, evaluate.
-- Add reproducibility controls (random seeds, deterministic flags).
-- Save generated image snapshots to disk for each checkpoint.
-- Add a separate inference script for single-image prediction.
+- Both scripts are single-file, notebook-style pipelines.
+- Paths and most hyperparameters are currently hardcoded.
